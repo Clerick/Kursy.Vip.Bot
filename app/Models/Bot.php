@@ -1,8 +1,12 @@
 <?php
 namespace App\Models;
 
+use App\Factories\MenuFactory;
+
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
+use unreal4u\TelegramAPI\Telegram\Methods\EditMessageText;
+
 use unreal4u\TelegramAPI\TgLog;
 use unreal4u\TelegramAPI\Telegram\Methods\GetUpdates;
 use unreal4u\TelegramAPI\HttpClientRequestHandler;
@@ -49,15 +53,6 @@ class Bot
      * @var int
      */
     private $inlineKeyboardMessageId = null;
-
-    /**
-     *
-     * @var array
-     */
-    private $messages = [
-        "greeting" => "Приветственное сообщение!\n Бла Бла Бла Бла\n введите /courses для списка курсов",
-        "unknown_command" => "Я не знаю такой команды."
-    ];
 
     final public function __construct()
     {
@@ -114,22 +109,24 @@ class Bot
 
     private function handleMessageUpdate($update)
     {
-        $chat_id = $update->message->chat->id;
+        $chatId = $update->message->chat->id;
         $request = $update->message->text;
 
-        // var_dump($update);
-
-        switch ($request) {
-            case '/start':
-                $this->sendMessage($chat_id, $this->messages['greeting']);
-                break;
-            case '/courses':
-                $this->sendMessage($chat_id, null, 'mainMenu');
-                break;
-            default:
-                $this->sendMessage($chat_id, $this->messages['unknown_command']);
-                break;
+        if($request === '/start') {
+            $menu = MenuFactory::build('MainMenu', $chatId);
+            $this->showMenu($menu);
         }
+
+        // switch ($request) {
+        //     case '/start':
+        //         $this->sendMessage($chat_id, $this->messages['greeting']);
+        //         break;
+        //     case '/courses':
+        //         $this->sendMessage($chat_id, null, 'mainMenu');
+        //         break;
+        //     default:
+        //         break;
+        // }
     }
 
     private function handleCallbackQueryUpdate(CallbackQuery $callbackQuery)
@@ -178,5 +175,9 @@ class Bot
         }, function (\Exception $exception) {
             echo 'Exception ' . get_class($exception) . ' caught, message: ' . $exception->getMessage();
         });
+    }
+
+    private function showMenu($menu) {
+        $promise = $this->tgLog->performApiRequest($menu);
     }
 }
