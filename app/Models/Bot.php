@@ -5,13 +5,12 @@ use App\Factories\MenuFactory;
 
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
-use unreal4u\TelegramAPI\Telegram\Methods\EditMessageText;
+use unreal4u\TelegramAPI\Telegram\Methods\DeleteMessage;
 
 use unreal4u\TelegramAPI\TgLog;
 use unreal4u\TelegramAPI\Telegram\Methods\GetUpdates;
 use unreal4u\TelegramAPI\HttpClientRequestHandler;
 use unreal4u\TelegramAPI\Abstracts\TraversableCustomType;
-use unreal4u\TelegramAPI\Telegram\Methods\SendMessage;
 use unreal4u\TelegramAPI\Telegram\Types\CallbackQuery;
 use App\Controllers\MenuController;
 
@@ -47,12 +46,6 @@ class Bot
      * @var string
      */
     private $token = '';
-
-    /**
-     *
-     * @var int
-     */
-    private $inlineKeyboardMessageId = null;
 
     final public function __construct()
     {
@@ -112,72 +105,23 @@ class Bot
         $chatId = $update->message->chat->id;
         $request = $update->message->text;
 
-        if($request === '/start') {
+        if ($request === '/start') {
             $menu = MenuFactory::build('MainMenu', $chatId);
             $this->showMenu($menu);
         }
-
-        // switch ($request) {
-        //     case '/start':
-        //         $this->sendMessage($chat_id, $this->messages['greeting']);
-        //         break;
-        //     case '/courses':
-        //         $this->sendMessage($chat_id, null, 'mainMenu');
-        //         break;
-        //     default:
-        //         break;
-        // }
     }
 
     private function handleCallbackQueryUpdate(CallbackQuery $callbackQuery)
     {
-        $menuController = new MenuController($callbackQuery, $this);
+        $menuController = new MenuController($callbackQuery);
 
-        $editMessageText = $menuController->getMenu();
+        $menu = $menuController->getMenu();
 
-        $promise = $this->tgLog->performApiRequest($editMessageText);
-
-        $promise->then(function ($response) {
-            $this->inlineKeyboardMessageId = $response->message_id;
-        }, function (\Exception $exception) {
-            echo 'Exception ' . get_class($exception) . ' caught, message: ' . $exception->getMessage();
-        });
-        $this->loop->run();
+        $this->showMenu($menu);
     }
 
-    /**
-     *
-     * @method sendMessage
-     * @param int $chat_id
-     * @param string $message
-     */
-    public function sendMessage($chat_id, $message = null, $keyboard = null)
+    private function showMenu($menu)
     {
-        $sendMessage = new SendMessage();
-        $sendMessage->chat_id = $chat_id;
-        if ($message != null) {
-            $sendMessage->text = $message;
-        }
-        $isInlineKeyboard = false;
-
-        if ($keyboard != null) {
-            $sendMessage = MenuController::appendMenuToMessage($sendMessage, $keyboard);
-            $isInlineKeyboard = true;
-        }
-
-        $promise = $this->tgLog->performApiRequest($sendMessage);
-
-        $promise->then(function ($response) {
-            global $isInlineKeyboard;
-            if ($isInlineKeyboard) {
-                $this->inlineKeyboardMessageId = $response->message_id;
-            }
-        }, function (\Exception $exception) {
-            echo 'Exception ' . get_class($exception) . ' caught, message: ' . $exception->getMessage();
-        });
-    }
-
-    private function showMenu($menu) {
         $promise = $this->tgLog->performApiRequest($menu);
     }
 }
