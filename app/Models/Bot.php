@@ -56,13 +56,18 @@ class Bot
     }
 
     /**
-     * Start bot function
+     * Start bot function. To stop bot, create empty file "stop.txt" in /app folder
      *
      * @method start
      */
     public function start()
     {
         while (true) {
+            $stopFile = dirname(__DIR__) . "/stop.txt";
+            if(file_exists($stopFile)) {
+                var_dump('file is exist');
+                break;
+            }
             sleep(2);
 
             if ($this->offset != null) {
