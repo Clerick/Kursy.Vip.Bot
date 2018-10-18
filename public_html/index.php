@@ -3,9 +3,9 @@ require_once '../vendor/autoload.php';
 
 use App\Models\Bot;
 
-$dot_path = dirname(__DIR__);
+$root_path = dirname(__FILE__, 2);
 
-$dotenv = new Dotenv\Dotenv($dot_path);
+$dotenv = new Dotenv\Dotenv($root_path);
 $dotenv->load();
 $dotenv->required(['BOT_TOKEN', 'ADMIN']);
 

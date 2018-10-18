@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7522e8c3397fbf808a15ba4409d58338",
+    "content-hash": "38b50578c0152d89dba6ab43b64b4eec",
     "packages": [
         {
             "name": "amphp/amp",
@@ -144,24 +144,26 @@
         },
         {
             "name": "amphp/byte-stream",
-            "version": "v1.3.1",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/byte-stream.git",
-                "reference": "1b75b122e6f069e7d102eef065dc192119d99ca7"
+                "reference": "17fae3bcecf9b4e7854c4ee41e8d6f58dac5d98d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/byte-stream/zipball/1b75b122e6f069e7d102eef065dc192119d99ca7",
-                "reference": "1b75b122e6f069e7d102eef065dc192119d99ca7",
+                "url": "https://api.github.com/repos/amphp/byte-stream/zipball/17fae3bcecf9b4e7854c4ee41e8d6f58dac5d98d",
+                "reference": "17fae3bcecf9b4e7854c4ee41e8d6f58dac5d98d",
                 "shasum": ""
             },
             "require": {
                 "amphp/amp": "^2"
             },
             "require-dev": {
+                "amphp/php-cs-fixer-config": "dev-master",
                 "amphp/phpunit-util": "^1",
                 "friendsofphp/php-cs-fixer": "^2.3",
+                "infection/infection": "^0.9.3",
                 "phpunit/phpunit": "^6"
             },
             "type": "library",
@@ -197,7 +199,7 @@
                 "non-blocking",
                 "stream"
             ],
-            "time": "2018-04-04T05:33:09+00:00"
+            "time": "2018-10-03T15:37:23+00:00"
         },
         {
             "name": "amphp/cache",
@@ -560,16 +562,16 @@
         },
         {
             "name": "amphp/socket",
-            "version": "v0.10.9",
+            "version": "v0.10.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/socket.git",
-                "reference": "6e9686b62b87c2cad235139a44be5121fe34edbb"
+                "reference": "efbe8fb64cf0ddcb4034076ebf1e64920c1259e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/socket/zipball/6e9686b62b87c2cad235139a44be5121fe34edbb",
-                "reference": "6e9686b62b87c2cad235139a44be5121fe34edbb",
+                "url": "https://api.github.com/repos/amphp/socket/zipball/efbe8fb64cf0ddcb4034076ebf1e64920c1259e2",
+                "reference": "efbe8fb64cf0ddcb4034076ebf1e64920c1259e2",
                 "shasum": ""
             },
             "require": {
@@ -623,7 +625,7 @@
                 "tcp",
                 "tls"
             ],
-            "time": "2018-05-01T21:14:10+00:00"
+            "time": "2018-10-03T09:32:18+00:00"
         },
         {
             "name": "amphp/sync",
@@ -902,6 +904,55 @@
             "time": "2017-07-23T21:35:13+00:00"
         },
         {
+            "name": "filebase/filebase",
+            "version": "v1.0.20",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/filebase/Filebase.git",
+                "reference": "80b62ffb931377c8b27674d95581101ae4f0c81c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/filebase/Filebase/zipball/80b62ffb931377c8b27674d95581101ae4f0c81c",
+                "reference": "80b62ffb931377c8b27674d95581101ae4f0c81c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "5.*",
+                "satooshi/php-coveralls": "^2.0"
+            },
+            "type": "package",
+            "autoload": {
+                "psr-4": {
+                    "Filebase\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Timothy Marois",
+                    "email": "timothymarois@gmail.com"
+                }
+            ],
+            "description": "A Simple but Powerful Flat File Database Storage.",
+            "homepage": "https://github.com/filebase/Filebase",
+            "keywords": [
+                "database",
+                "document",
+                "file",
+                "file-files",
+                "filebase",
+                "flat",
+                "flat-file",
+                "key-value",
+                "serverless"
+            ],
+            "time": "2018-08-16T13:54:49+00:00"
+        },
+        {
             "name": "kelunik/certificate",
             "version": "v1.1.1",
             "source": {
@@ -1002,16 +1053,16 @@
         },
         {
             "name": "psr/log",
-            "version": "dev-master",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "3490ba5925e6dcbe6de950c5c6b8dce9f6e96eda"
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/3490ba5925e6dcbe6de950c5c6b8dce9f6e96eda",
-                "reference": "3490ba5925e6dcbe6de950c5c6b8dce9f6e96eda",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
                 "shasum": ""
             },
             "require": {
@@ -1045,7 +1096,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2018-04-03T15:59:15+00:00"
+            "time": "2016-10-10T12:19:37+00:00"
         },
         {
             "name": "react/cache",
@@ -1609,6 +1660,47 @@
             "time": "2018-07-29T20:33:41+00:00"
         },
         {
+            "name": "yandex-money/yandex-money-sdk-php",
+            "version": "v3.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yandex-money/yandex-money-sdk-php.git",
+                "reference": "4d8bb506f67dcd90f400b47e656dd8e173efa8c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yandex-money/yandex-money-sdk-php/zipball/4d8bb506f67dcd90f400b47e656dd8e173efa8c6",
+                "reference": "4d8bb506f67dcd90f400b47e656dd8e173efa8c6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Yandex.Money API SDK for PHP",
+            "keywords": [
+                "money",
+                "payment",
+                "php",
+                "sdk",
+                "yandex",
+                "yandex.money"
+            ],
+            "time": "2015-02-02T16:45:08+00:00"
+        },
+        {
             "name": "yoshi2889/collections",
             "version": "v0.1.6",
             "source": {
@@ -1698,7 +1790,7 @@
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,

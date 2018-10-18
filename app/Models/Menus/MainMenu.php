@@ -26,6 +26,14 @@ class MainMenu extends BaseMenu
             $buttonRows[] = $buttonRow;
         }
 
+        $techSupportButtonRow = [
+            [
+                "text" => "Связаться с тех. поддержкой",
+                "url" => "https://t.me/" . getenv('ADMIN'),
+            ]
+        ];
+        $buttonRows[] = $techSupportButtonRow;
+
         $inlineKeyboard = new Markup([
             'inline_keyboard' => $buttonRows
         ]);

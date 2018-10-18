@@ -85,6 +85,9 @@ class MenuController
             case 'content':
                 $menu = MenuFactory::build('ContentMenu', $chatId, $messageId, $this->menuParam);
                 break;
+            case 'pay':
+                $menu = MenuFactory::build('PayMenu', $chatId, $messageId, $this->menuParam);
+                break;
 
             default:
                 break;

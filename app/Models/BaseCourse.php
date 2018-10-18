@@ -4,36 +4,41 @@ namespace App\Models;
 abstract class BaseCourse
 {
     /**
-     *   @var string
+     * @var string
      */
     protected $name = null;
 
     /**
-     *   Uses for callback_data with inline keyboard
-     *   must match the class name
-     *   @var string
+     * Uses for callback_data with inline keyboard
+     * must match the class name
+     * @var string
      */
     protected $shortName = null;
 
     /**
-     *   @var string
+     * @var string
      */
     protected $description = null;
 
     /**
-     *   @var string
+     * @var string
      */
     protected $warrantyUrl = null;
 
     /**
-     *   @var string
+     * @var string
      */
     protected $courseUrl = null;
 
     /**
-     *   @var string
+     * @var string
      */
     protected $content = null;
+
+    /**
+     * @var int
+     */
+    protected $price = null;
 
     /**
      * @return string
@@ -76,11 +81,19 @@ abstract class BaseCourse
     }
 
     /**
-     *   @return string
+     * @return string
      */
     public function getContent(): string
     {
         return $this->content;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrice() : int
+    {
+        return $this->price;
     }
 
     /**
@@ -119,11 +132,13 @@ abstract class BaseCourse
 
     abstract protected function setDescription();
     abstract protected function setContent();
+    abstract protected function setPrice();
 
     public function __construct()
     {
         $this->setName();
         $this->setShortName();
+        $this->setPrice();
         $this->setDescription();
         $this->setWarrantyUrl();
         $this->setCourseUrl();
