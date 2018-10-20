@@ -4,3 +4,7 @@ composer.phar
 app/Database/
 
 .vscode
+.settings/
+nbproject/
+.buildpath
+.project

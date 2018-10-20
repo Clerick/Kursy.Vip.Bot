@@ -35,6 +35,15 @@ class FilebaseDB implements DBInterface {
         return null;
     }
 
+     public function getChatAccessToken($chat_id)
+     {
+         if($this->db->has($chat_id)) {
+             $chat = $this->db->get($chat_id);
+             return $chat->access_token;
+         }
+         return null;
+     }
+
     /**
      * @param mixed $user_id
      * @param mixed $instance_id
@@ -47,6 +56,14 @@ class FilebaseDB implements DBInterface {
         $user->save();
         return $user->instance_id;
     }
+
+     public function setChatAccessToken($chat_id, $access_token)
+     {
+         $chat = $this->db->get($chat_id);
+         $chat->access_token = $access_token;
+         $chat->save();
+         return $chat->access_token;
+     }
 
     public function userHasInstanceId($user_id)
     {
@@ -66,6 +83,13 @@ class FilebaseDB implements DBInterface {
         $user = $this->db->get($user_id);
         $user->invoice_id = $invoice_id;
         $user->save();
+    }
+
+    public function savePaymentId($chat_id, $payment_id)
+    {
+        $chat = $this->db->get($chat_id);
+        $chat->invoice_id = $payment_id;
+        $chat->save();
     }
 
 }

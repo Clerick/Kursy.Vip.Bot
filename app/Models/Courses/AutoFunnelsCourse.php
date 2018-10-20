@@ -12,7 +12,8 @@ class AutoFunnelsCourse extends BaseCourse
 
     protected function setDescription()
     {
-        $this->description = "Автоворонки в мессенжерах - Кир Уланов (2018г.)\n3900руб.";
+        $this->description = "Автоворонки в мессенжерах - Кир Уланов (2018г.)\n" .
+            $this->getPrice() . "р";
     }
 
     protected function setContent()

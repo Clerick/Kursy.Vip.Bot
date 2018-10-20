@@ -12,7 +12,8 @@ class BMToolkit extends BaseCourse
 
     protected function setDescription()
     {
-        $this->description = "Инструментариум БМ\n3900руб.";
+        $this->description = "Инструментариум БМ\n" . 
+            $this->getPrice() . "р";
     }
 
     protected function setContent()

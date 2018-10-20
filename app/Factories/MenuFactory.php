@@ -18,7 +18,7 @@ class MenuFactory
     {
         $fullMenuClassName = "\\App\\Models\\Menus\\$menuName";
         if (!class_exists($fullMenuClassName)) {
-            throw new \Exception("Cant find $menuName class in \\App\\Models\\Menus namespace");
+            return null;
         }
         $menu = new $fullMenuClassName($chatId, $messageId, $menuParam);
         return $menu->get();

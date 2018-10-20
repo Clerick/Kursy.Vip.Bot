@@ -1,13 +1,22 @@
 <?php
+
 namespace App\Controllers;
 
 use \YandexMoney\API;
 use \YandexMoney\ExternalPayment;
+use App\Models\BaseCourse;
 use App\Models\FilebaseDB;
-use \FilebaseDB\Document;
 
 class YMController
 {
+
+    private $chatId;
+
+    /**
+     * @var BaseCourse 
+     */
+    private $course;
+
     /**
      * @var array
      */
@@ -33,75 +42,77 @@ class YMController
      */
     private $db;
 
-    private $accessToken;
-
-    public function __construct()
+    public function __construct(int $chatId, BaseCourse $course)
     {
-        $this->scope = [
-            "account-info",
-            // "operation-history",
-            "payment.to-account(\"" . getenv("YANDEX_WALLET") . "\").limit(7,4000)",
-            // "payment.to-account(\"410014197482783\").limit(,500)",
-        ];
         $this->client_id = getenv("YANDEX_CLIENT_ID");
         $this->redirect_uri = getenv("YANDEX_REDIRECT_URI");
         $this->db = new FilebaseDB();
+
+        $this->chatId = $chatId;
+        $this->course = $course;
+
+        $this->scope = [
+            "payment.to-account(\"" . getenv("YANDEX_WALLET") . "\").limit(," . $this->course->getPrice() . ")",
+        ];
+
     }
 
-    public function getAuthUrl()
+    /**
+     * 
+     * @return string
+     */
+    public function getAuthUrl() : string
     {
-        $auth_url = API::buildObtainTokenUrl($this->client_id, $this->redirect_uri, $this->scope);
+        $redirect_uri = $this->redirect_uri .
+            "?params=" . $this->chatId . "-" . $this->course->getShortName();
+        $auth_url = API::buildObtainTokenUrl($this->client_id, $redirect_uri, $this->scope);
         return $auth_url;
     }
 
-    public function setAccessToken($code)
+    /**
+     * 
+     * @return string
+     */
+    public function getYMWalletUrl() : string
+    {
+        $url = $this->redirect_uri .
+            "?params=" . $this->chatId . "-" . $this->course->getShortName();
+        return $url;
+    }
+
+    /**
+     * 
+     * @param type string $code
+     * @throws \Exception
+     */
+    public function setAccessToken(string $code)
     {
         $access_token_response = API::getAccessToken($this->client_id, $code, $this->redirect_uri);
 
         if (property_exists($access_token_response, "error")) {
-            echo "error <br>";
-            var_dump($access_token_response);
-            // var_dump($access_token_response->error);
+            throw new \Exception("setAccessToken fail. " . $access_token_response->error);
         }
 
         $access_token = $access_token_response->access_token;
-        var_dump($access_token);
-        $this->accessToken = $access_token;
+        $this->db->setChatAccessToken($this->chatId, $access_token);
 
         $this->api = new API($access_token);
     }
 
-    public function getAccountInfo()
-    {
-        if ($this->api == null) {
-            throw new \Exception("Access token is not set");
-        }
-
-        return $this->api->accountInfo();
-    }
-
     public function requestPayment()
     {
-        // WARNING: debug code
-        $this->api = new API(getenv("YANDEX_ACCESS_TOKEN"));
-
-
         if ($this->api == null) {
             throw new \Exception("Access token is not set");
         }
 
-        $requestPayment = $this->api->requestPayment(array(
-            "pattern_id" => "p2p",
+        $requestPayment = $this->api->requestPayment(["pattern_id" => "p2p",
             "to" => getenv('YANDEX_WALLET'),
-            "amount_due" => "5",
-            "comment" => "comment",
-            "message" => "message",
-            "label" => "label",
-            "test_payment" => "true",
-            "test_result" => "success",
-        ));
-
-        var_dump($requestPayment);
+            "amount_due" => $this->course->getPrice(),
+            "comment" => $this->course->getDescription(),
+            "message" => "Оплата за курс",
+//            "test_payment" => "true",
+//            "test_result" => "success",
+        ]);
 
         return $requestPayment;
     }
@@ -109,29 +120,31 @@ class YMController
     public function makePaymentFromWallet()
     {
         $requestPayment = $this->requestPayment();
-        if($requestPayment->status != "success") {
-            throw new \Exception($request->error);
+        if ($requestPayment->status == "refused") {
+            return($requestPayment->error);
         }
 
         do {
-            $process_payment = $this->api->processPayment(array(
+            $process_payment = $this->api->processPayment([
                 "request_id" => $requestPayment->request_id,
-                "test_payment" => "true",
-                "test_result" => "success",
-            ));
-            if($process_payment->status == "in_progress") {
-                sleep(2);
-            }
+//                "test_payment" => "true",
+//                "test_result" => "success",
+            ]);
 
-            if($process_payment->status == "success")
-            {
-                $this->db->saveInvoiceId(123, $process_payment->payment_id);
-                var_dump("process payment is success");
-                var_dump($process_payment);
-            }
+            switch ($process_payment->status) {
+                case "in_progress":
+                    sleep(2);
+                    break;
+                case "success":
+                    $this->db->savePaymentId($this->chatId, $process_payment->payment_id);
+                    return "payment_success";
+                case "refused":
+                    return $process_payment->error;
 
+                default:
+                    return $process_payment->error;
+            }
         } while ($process_payment->status == "in_progress");
-
     }
 
     public function getInstanceId($user_id)
@@ -145,7 +158,6 @@ class YMController
                 $this->db->setUserInstanceId($user_id, $instance_id);
                 return $instance_id;
             } else {
-                // throw exception with $response->error message
                 throw new \Exception($response->error);
             }
         }
@@ -156,29 +168,27 @@ class YMController
         $instance_id = $this->getInstanceId($user_id);
         $external_payment = new ExternalPayment($instance_id);
 
-        $payment_options = array(
-            "pattern_id" => "p2p",
+        $payment_options = ["pattern_id" => "p2p",
             "to" => getenv('YANDEX_WALLET'),
             "amount" => $amount,
             "comment" => "sample test payment comment",
             "message" => "Оплата курса course_name",
             "test_payment" => "true",
             "test_result" => "success"
-        );
+        ];
 
         $response = $external_payment->request($payment_options);
 
         if ($response->status == "success") {
             $request_id = $response->request_id;
 
-            $process_options = array(
-                "request_id" => $request_id,
+            $process_options = ["request_id" => $request_id,
                 "instance_id" => $this->getInstanceId($user_id),
                 "ext_auth_success_uri" => "http://mih1984.beget.tech/ymc-success.php",
                 "ext_auth_fail_uri" => "http://mih1984.beget.tech/ymc-fail.php",
                 "test_payment" => "true",
                 "test_result" => "success",
-            );
+            ];
             do {
                 $result = $external_payment->process($process_options);
                 if ($result->status == "in_progress") {
@@ -190,12 +200,11 @@ class YMController
                         $result->acs_uri,
                         http_build_query($result->acs_params)
                     );
-                    header('Location: '. $url);
+                    header('Location: ' . $url);
                     die();
                 }
                 if ($result->status == "sucess") {
                     $this->db->saveInvoiceId($user_id, $result->invoice_id);
-                    echo "payment was sucess";
                 }
             } while ($result->status == 'in_progress');
         } else {
@@ -203,4 +212,5 @@ class YMController
             throw new \Exception($response->message);
         }
     }
+
 }

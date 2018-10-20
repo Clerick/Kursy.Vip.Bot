@@ -12,7 +12,8 @@ class AccelCourse extends BaseCourse
 
     protected function setDescription()
     {
-        $this->description = "Accel - курс по созданию онлайн школ (2018г.)\n7900руб.";
+        $this->description = "Accel - курс по созданию онлайн школ (2018г.)\n" .
+            $this->getPrice() . "р";
     }
 
     protected function setContent()
@@ -22,6 +23,6 @@ class AccelCourse extends BaseCourse
 
     protected function setPrice()
     {
-        $this->price = 7900;
+        $this->price = 5;
     }
 }

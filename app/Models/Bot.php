@@ -1,18 +1,17 @@
 <?php
+
 namespace App\Models;
 
 use App\Factories\MenuFactory;
-
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
-use unreal4u\TelegramAPI\Telegram\Methods\DeleteMessage;
-
+use App\Controllers\MenuController;
 use unreal4u\TelegramAPI\TgLog;
 use unreal4u\TelegramAPI\Telegram\Methods\GetUpdates;
 use unreal4u\TelegramAPI\HttpClientRequestHandler;
 use unreal4u\TelegramAPI\Abstracts\TraversableCustomType;
 use unreal4u\TelegramAPI\Telegram\Types\CallbackQuery;
-use App\Controllers\MenuController;
+use unreal4u\TelegramAPI\Telegram\Methods\SendMessage;
 
 class Bot
 {
@@ -64,8 +63,7 @@ class Bot
     {
         while (true) {
             $stopFile = dirname(__DIR__) . "/stop.txt";
-            if(file_exists($stopFile)) {
-                var_dump('file is exist');
+            if (file_exists($stopFile)) {
                 break;
             }
             sleep(2);
@@ -83,6 +81,32 @@ class Bot
             });
             $this->loop->run();
         }
+    }
+
+    public function sendCourseLink($chatId, $link)
+    {
+        $message = "Спасибо за оплату. Курс вы можете скачать по " .
+        "<a href=\"" . $link . "\">ссылке</a>";
+
+        $sendMessage = new SendMessage();
+        $sendMessage->chat_id = $chatId;
+        $sendMessage->text = $message;
+        $sendMessage->parse_mode = "HTML";
+        $sendMessage->disable_web_page_preview = true;
+
+        $this->tgLog->performApiRequest($sendMessage);
+        $this->loop->run();
+    }
+
+    public function sendMessage($chatId, $message)
+    {
+        $sendMessage = new SendMessage();
+        $sendMessage->chat_id = $chatId;
+        $sendMessage->text = $message;
+        $sendMessage->disable_web_page_preview = true;
+
+        $this->tgLog->performApiRequest($sendMessage);
+        $this->loop->run();
     }
 
     /**
@@ -127,6 +151,7 @@ class Bot
 
     private function showMenu($menu)
     {
-        $promise = $this->tgLog->performApiRequest($menu);
+        $this->tgLog->performApiRequest($menu);
     }
+
 }

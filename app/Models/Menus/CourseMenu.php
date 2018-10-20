@@ -31,8 +31,8 @@ class CourseMenu extends BaseMenu
     {
         $buyButton = [
             "text" => "Купить",
-            "url" => "https://t.me/" . getenv('ADMIN'),
-            // "callback_data" => "pay-" . $this->course->getShortName(),
+            // "url" => "https://t.me/" . getenv('ADMIN'),
+            "callback_data" => "pay-" . $this->course->getShortName(),
         ];
 
         $warrantyButton = [

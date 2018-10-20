@@ -562,16 +562,16 @@
         },
         {
             "name": "amphp/socket",
-            "version": "v0.10.10",
+            "version": "v0.10.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/socket.git",
-                "reference": "efbe8fb64cf0ddcb4034076ebf1e64920c1259e2"
+                "reference": "2cb9d0ef823cfd1de4cfbd0e680c58841367f727"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/socket/zipball/efbe8fb64cf0ddcb4034076ebf1e64920c1259e2",
-                "reference": "efbe8fb64cf0ddcb4034076ebf1e64920c1259e2",
+                "url": "https://api.github.com/repos/amphp/socket/zipball/2cb9d0ef823cfd1de4cfbd0e680c58841367f727",
+                "reference": "2cb9d0ef823cfd1de4cfbd0e680c58841367f727",
                 "shasum": ""
             },
             "require": {
@@ -625,7 +625,7 @@
                 "tcp",
                 "tls"
             ],
-            "time": "2018-10-03T09:32:18+00:00"
+            "time": "2018-10-17T16:53:02+00:00"
         },
         {
             "name": "amphp/sync",

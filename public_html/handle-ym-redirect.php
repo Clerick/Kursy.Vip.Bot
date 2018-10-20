@@ -1,12 +1,12 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
+error_reporting(0);
 
 require_once '../vendor/autoload.php';
 
-use \YandexMoney\API;
 use App\Controllers\YMController;
+use App\Models\Bot;
+use App\Factories\CourseFactory;
 
 $root_path = dirname(__FILE__, 2);
 
@@ -17,29 +17,52 @@ $dotenv->required(['BOT_TOKEN', 'ADMIN']);
 $client_id = getenv("YANDEX_CLIENT_ID");
 $redirect_uri = getenv("YANDEX_REDIRECT_URI");
 
-// if(isset($_GET['code'])) {
-    // $code = $_GET['code'];
-    // $code = filter_var($_GET['code'], FILTER_SANITIZE_STRING);
-    $ymController = new YMController();
-    // $ymController->setAccessToken($code);
-    // $accInfo = $ymController->getAccountInfo();
-    // file_put_contents('newfile.txt', $accInfo);
-    echo '<pre>';
-    // var_dump($accInfo);
+$paramsString = filter_input(INPUT_GET, 'params', FILTER_SANITIZE_STRING);
+$code = filter_input(INPUT_GET, 'code', FILTER_SANITIZE_STRING);
+list($chatId, $courseName) = explode("-", $paramsString);
 
-    $ymController->makePaymentFromWallet();
+$bot = new Bot();
 
+$course = CourseFactory::build($courseName);
+if ($course == null || $chatId == null) {
+    $message = "Вы перешли по неверному адресу.\n" .
+        "Пожалуйста, свяжитесь с нашей техподдержкой\n" .
+        "https://t.me/" . getenv("ADMIN");
+    die();
+}
 
-    echo '</pre>';
-// } else {
-//     $ymController = new YMController();
-//     $auth_url = $ymController->getAuthUrl();
-//     header('Location: ' . $auth_url);
-//     die();
-// }
+$ymController = new YMController($chatId, $course);
 
+if ($code != null) {
+    $ymController->setAccessToken($code);
+    $result = $ymController->makePaymentFromWallet();
 
-// $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
-// fwrite($myfile, $accInfo);
-// fclose($myfile);
+    if ($result == "payment_success") {
+        $bot->sendCourseLink($chatId, $course->getCourseUrl());
+        backToBot();
+    }
 
+    if ($result == "not_enough_funds") {
+        $message = "У вас недостаточно средств для покупки";
+        $bot->sendMessage($chatId, $message);
+        backToBot();
+    }
+
+    $message = "Возникла ошибка при проведении платежа." .
+        "Пожалуйста, свяжитесь с нашим администратором\n" .
+        "https://t.me/" . getenv('ADMIN') . "\nИ укажите код ошибки:" .
+        $result;
+    $bot->sendMessage($chatId, $message);
+    backToBot();
+} else {
+    $ymController = new YMController($chatId, $course);
+    $auth_url = $ymController->getAuthUrl();
+    header('Location: ' . $auth_url);
+    die();
+}
+
+function backToBot()
+{
+    header("Location: https://t.me/kursy_vip_bot");
+    die();
+}

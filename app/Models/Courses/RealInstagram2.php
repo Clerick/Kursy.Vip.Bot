@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Models\Courses;
 
 use App\Models\BaseCourse;
 
 class RealInstagram2 extends BaseCourse
 {
+
     protected function setName()
     {
         $this->name = "Реальный Инстаграм";
@@ -12,7 +14,8 @@ class RealInstagram2 extends BaseCourse
 
     protected function setDescription()
     {
-        $this->description = "Реальный Инстаграм 2,0\n1900руб.";
+        $this->description = "Реальный Инстаграм 2,0\n" .
+            $this->getPrice() . "р";
     }
 
     protected function setContent()
@@ -24,4 +27,5 @@ class RealInstagram2 extends BaseCourse
     {
         $this->price = 1900;
     }
+
 }

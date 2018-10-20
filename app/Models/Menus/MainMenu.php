@@ -8,7 +8,7 @@ class MainMenu extends BaseMenu
 {
     protected function setText()
     {
-        $this->menuText->text = "Вот список курсов";
+        $this->menuText->text = "Вот список курсов:";
     }
 
     protected function setReplyMarkup()

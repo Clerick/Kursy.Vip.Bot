@@ -12,7 +12,8 @@ class BMYoutube extends BaseCourse
 
     protected function setDescription()
     {
-        $this->description = "Реальный Ютуб БМ\n1900руб.";
+        $this->description = "Реальный Ютуб БМ\n" .
+            $this->getPrice() . "р";
     }
 
     protected function setContent()
