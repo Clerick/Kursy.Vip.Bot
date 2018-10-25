@@ -13,7 +13,7 @@ class YMController
     private $chatId;
 
     /**
-     * @var BaseCourse 
+     * @var BaseCourse
      */
     private $course;
 
@@ -52,16 +52,16 @@ class YMController
         $this->course = $course;
 
         $this->scope = [
-            "payment.to-account(\"" . getenv("YANDEX_WALLET") . "\").limit(," . $this->course->getPrice() . ")",
+            "payment.to-account(\"" . getenv("YANDEX_WALLET") .
+            "\").limit(," . $this->course->getPrice() . ")",
         ];
-
     }
 
     /**
-     * 
+     *
      * @return string
      */
-    public function getAuthUrl() : string
+    public function getAuthUrl(): string
     {
         $redirect_uri = $this->redirect_uri .
             "?params=" . $this->chatId . "-" . $this->course->getShortName();
@@ -70,10 +70,10 @@ class YMController
     }
 
     /**
-     * 
+     *
      * @return string
      */
-    public function getYMWalletUrl() : string
+    public function getYMWalletUrl(): string
     {
         $url = $this->redirect_uri .
             "?params=" . $this->chatId . "-" . $this->course->getShortName();
@@ -81,7 +81,7 @@ class YMController
     }
 
     /**
-     * 
+     *
      * @param type string $code
      * @throws \Exception
      */
@@ -105,7 +105,8 @@ class YMController
             throw new \Exception("Access token is not set");
         }
 
-        $requestPayment = $this->api->requestPayment(["pattern_id" => "p2p",
+        $requestPayment = $this->api->requestPayment([
+            "pattern_id" => "p2p",
             "to" => getenv('YANDEX_WALLET'),
             "amount_due" => $this->course->getPrice(),
             "comment" => $this->course->getDescription(),
@@ -147,15 +148,15 @@ class YMController
         } while ($process_payment->status == "in_progress");
     }
 
-    public function getInstanceId($user_id)
+    public function getInstanceId()
     {
-        if ($this->db->userHasInstanceId($user_id)) {
-            return $this->db->getInstanceId($user_id);
+        if ($this->db->userHasInstanceId($this->chatId)) {
+            return $this->db->getInstanceId($this->chatId);
         } else {
             $response = ExternalPayment::getInstanceId($this->client_id);
             if ($response->status == "success") {
                 $instance_id = $response->instance_id;
-                $this->db->setUserInstanceId($user_id, $instance_id);
+                $this->db->setUserInstanceId($this->chatId, $instance_id);
                 return $instance_id;
             } else {
                 throw new \Exception($response->error);
@@ -163,14 +164,15 @@ class YMController
         }
     }
 
-    public function makePayment($user_id, $amount)
+    public function makePayment()
     {
-        $instance_id = $this->getInstanceId($user_id);
+        $instance_id = $this->getInstanceId();
         $external_payment = new ExternalPayment($instance_id);
 
-        $payment_options = ["pattern_id" => "p2p",
+        $payment_options = [
+            "pattern_id" => "p2p",
             "to" => getenv('YANDEX_WALLET'),
-            "amount" => $amount,
+            "amount" => $this->course->getPrice(),
             "comment" => "sample test payment comment",
             "message" => "Оплата курса course_name",
             "test_payment" => "true",
@@ -183,7 +185,7 @@ class YMController
             $request_id = $response->request_id;
 
             $process_options = ["request_id" => $request_id,
-                "instance_id" => $this->getInstanceId($user_id),
+                "instance_id" => $this->getInstanceId(),
                 "ext_auth_success_uri" => "http://mih1984.beget.tech/ymc-success.php",
                 "ext_auth_fail_uri" => "http://mih1984.beget.tech/ymc-fail.php",
                 "test_payment" => "true",
@@ -192,7 +194,7 @@ class YMController
             do {
                 $result = $external_payment->process($process_options);
                 if ($result->status == "in_progress") {
-                    sleep(2);
+                    sleep(5);
                 }
                 if ($result->status == "ext_auth_required") {
                     $url = sprintf(
@@ -200,14 +202,18 @@ class YMController
                         $result->acs_uri,
                         http_build_query($result->acs_params)
                     );
-                    header('Location: ' . $url);
+
+                    var_dump($result->acs_params);
+//					header('Location: ' . $url);
                     die();
                 }
-                if ($result->status == "sucess") {
-                    $this->db->saveInvoiceId($user_id, $result->invoice_id);
+                if ($result->status == "success") {
+                    $this->db->saveInvoiceId($this->chatId, $result->invoice_id);
+                    return "payment_success";
                 }
             } while ($result->status == 'in_progress');
         } else {
+            var_dump($response->error);
             // throw exception with $response->message
             throw new \Exception($response->message);
         }

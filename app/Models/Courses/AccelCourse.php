@@ -23,6 +23,6 @@ class AccelCourse extends BaseCourse
 
     protected function setPrice()
     {
-        $this->price = 5;
+        $this->price = 7900;
     }
 }
