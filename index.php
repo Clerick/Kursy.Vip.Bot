@@ -10,8 +10,9 @@ use App\Models\Bot;
 use unreal4u\TelegramAPI\Telegram\Types\Update;
 
 $updateData = json_decode(file_get_contents('php://input'), true);
-
+var_dump($updateData);
 $update = new Update($updateData);
+var_dump($update);
 
 $bot = new Bot();
 
