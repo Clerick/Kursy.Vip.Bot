@@ -16,9 +16,9 @@ $update = new Update($updateData);
 $bot = new Bot();
 
 if ($update->message != null) {
-    $this->handleMessageUpdate($update);
+    $bot->handleMessageUpdate($update);
 }
 
 if ($update->callback_query != null) {
-    $this->handleCallbackQueryUpdate($update->callback_query);
+    $bot->handleCallbackQueryUpdate($update->callback_query);
 }
