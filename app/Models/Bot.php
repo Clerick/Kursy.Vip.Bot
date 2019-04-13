@@ -66,7 +66,7 @@ class Bot
             if (file_exists($stopFile)) {
                 break;
             }
-            sleep(2);
+//            sleep(2);
 
             if ($this->offset != null) {
                 $this->getUpdates->offset = $this->offset;
@@ -76,6 +76,7 @@ class Bot
             $updatePromise->then(function (TraversableCustomType $updatesArray) {
                 $this->handleUpdates($updatesArray);
             }, function (\Exception $exception) {
+//                var_dump($exception);
                 // Onoes, an exception occurred...
                 echo 'Exception ' . get_class($exception) . ' caught, message: ' . $exception->getMessage();
             });
@@ -129,7 +130,7 @@ class Bot
         }
     }
 
-    private function handleMessageUpdate($update)
+    public function handleMessageUpdate($update)
     {
         $chatId = $update->message->chat->id;
         $request = $update->message->text;
@@ -140,7 +141,7 @@ class Bot
         }
     }
 
-    private function handleCallbackQueryUpdate(CallbackQuery $callbackQuery)
+    public function handleCallbackQueryUpdate(CallbackQuery $callbackQuery)
     {
         $menuController = new MenuController($callbackQuery);
 

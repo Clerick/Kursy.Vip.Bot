@@ -82,7 +82,7 @@ class YMController
 
     /**
      *
-     * @param type string $code
+     * @param string $code
      * @throws \Exception
      */
     public function setAccessToken(string $code)

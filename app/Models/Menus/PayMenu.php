@@ -33,17 +33,20 @@ class PayMenu extends BaseMenu
 
     protected function setText()
     {
-        $this->menuText->text = "Стоимость курса " . $this->course->getPrice() . "руб.\nДля оплаты карточкой или другим способом, пожалуйста, свяжитесь с нашим администратором.";
+        $this->menuText->text =
+            "Стоимость курса "
+            . $this->course->getPrice()
+            . "руб.\n Пожалуйста, свяжитесь с нашим администратором для выбора подходящего варианта оплаты.";
 
 //		var_dump($this->menuText->text);
     }
 
     protected function setReplyMarkup()
     {
-        $ymWalletButton = [
-            "text" => "Оплатить с помощью ЯД",
-            "url" => $this->ym->getYMWalletUrl(),
-        ];
+//        $ymWalletButton = [
+//            "text" => "Оплатить с помощью ЯД",
+//            "url" => $this->ym->getYMWalletUrl(),
+//        ];
 
 //		var_dump($ymWalletButton);
 //        $ymCardButton = [
@@ -53,7 +56,7 @@ class PayMenu extends BaseMenu
 //            "url" => "https://t.me/" . getenv('ADMIN'),
 //        ];
         $adminButton = [
-            "text" => 'Оплатить другим способом',
+            "text" => 'Связаться с администратором',
             "url" => "https://t.me/" . getenv('ADMIN'),
         ];
 
@@ -64,9 +67,9 @@ class PayMenu extends BaseMenu
 
         $inlineKeyboard = new Markup([
             "inline_keyboard" => [
-                [
-                    $ymWalletButton,
-                ],
+//                [
+//                    $ymWalletButton,
+//                ],
                 [
                     $adminButton,
                 ],
